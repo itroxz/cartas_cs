@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin - Sistema de Cartas</title>
+    <link rel="stylesheet" href="styles/admin.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>PAINEL ADMINISTRATIVO</h1>
+                <p class="subtitle">Sistema de Gerenciamento de Cartas</p>
+            </div>
+        </header>
+
+        <div class="dashboard">
+            <!-- Configuração de Times -->
+            <section class="card">
+                <h2>Configuração de Times</h2>
+                <div class="form-group">
+                    <label for="team1Name">Nome do Time 1:</label>
+                    <input type="text" id="team1Name" placeholder="Digite o nome do Time 1">
+                </div>
+                <div class="form-group">
+                    <label for="team2Name">Nome do Time 2:</label>
+                    <input type="text" id="team2Name" placeholder="Digite o nome do Time 2">
+                </div>
+                <button onclick="updateTeamNames()" class="btn btn-primary">Salvar Nomes</button>
+                
+                <hr style="margin: 25px 0; border: none; border-top: 1px solid #334155;">
+                
+                <h3 style="margin-bottom: 15px;">Lados (Counter-Strike)</h3>
+                <p style="color: #94a3b8; margin-bottom: 15px; font-size: 0.95em;">
+                    Selecione o lado do Time 1. O Time 2 será automaticamente o lado oposto.
+                </p>
+                <div class="side-selector">
+                    <button onclick="setTeamSide('CT')" id="btnCT" class="side-btn">
+                        <span class="side-label">Time 1: CT</span>
+                        <span class="side-sublabel">(Time 2: TR)</span>
+                    </button>
+                    <button onclick="setTeamSide('TR')" id="btnTR" class="side-btn">
+                        <span class="side-label">Time 1: TR</span>
+                        <span class="side-sublabel">(Time 2: CT)</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Status dos Times -->
+            <section class="card">
+                <h2>Status dos Times</h2>
+                <div class="team-status">
+                    <div class="team">
+                        <h3 id="team1NameDisplay">Time 1</h3>
+                        <p><span class="side-badge" id="team1SideDisplay">CT</span></p>
+                        <p>Cartas restantes: <strong id="team1Cards">5</strong></p>
+                        <button onclick="restoreTeam('team1')" class="btn btn-secondary">Restaurar Cartas</button>
+                    </div>
+                    <div class="team">
+                        <h3 id="team2NameDisplay">Time 2</h3>
+                        <p><span class="side-badge" id="team2SideDisplay">TR</span></p>
+                        <p>Cartas restantes: <strong id="team2Cards">5</strong></p>
+                        <button onclick="restoreTeam('team2')" class="btn btn-secondary">Restaurar Cartas</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Carta Atual -->
+            <section class="card">
+                <h2>Carta Revelada Atualmente</h2>
+                <div id="currentCardDisplay" class="current-card-display">
+                    <p class="empty-state">Nenhuma carta revelada ainda</p>
+                </div>
+            </section>
+
+            <!-- Histórico de Cartas -->
+            <section class="card">
+                <h2>Histórico de Revelações</h2>
+                <div id="historyDisplay" class="history-display">
+                    <p class="empty-state">Nenhuma carta foi revelada ainda</p>
+                </div>
+            </section>
+
+            <!-- Controles do Sistema -->
+            <section class="card danger-zone">
+                <h2>Controles do Sistema</h2>
+                <button onclick="resetSystem()" class="btn btn-danger">Resetar Sistema Completo</button>
+                <p class="warning">ATENÇÃO: Isso irá restaurar todas as cartas de ambos os times</p>
+            </section>
+
+            <!-- Links Rápidos -->
+            <section class="card">
+                <h2>Links Rápidos</h2>
+                <div class="links">
+                    <a href="/operator" target="_blank" class="btn btn-link">Painel do Operador</a>
+                    <a href="/obs" target="_blank" class="btn btn-link">Página OBS</a>
+                    <a href="/api/current-card" target="_blank" class="btn btn-link">API JSON</a>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script src="scripts/admin.js"></script>
+</body>
+</html>

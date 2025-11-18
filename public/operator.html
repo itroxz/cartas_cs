@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Operador - Sistema de Cartas</title>
+    <link rel="stylesheet" href="styles/operator.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>PAINEL DO OPERADOR</h1>
+                <p class="subtitle">Sistema de Revelação de Cartas</p>
+            </div>
+        </header>
+
+        <div class="operator-panel">
+            <!-- Seleção de Time -->
+            <section class="card">
+                <h2>Selecione o Time</h2>
+                <div class="team-selector">
+                    <button onclick="selectTeam('team1')" id="btnTeam1" class="team-btn">
+                        <span class="team-name" id="team1Name">Time 1</span>
+                        <span class="card-count" id="team1Count">5 cartas</span>
+                    </button>
+                    <button onclick="selectTeam('team2')" id="btnTeam2" class="team-btn">
+                        <span class="team-name" id="team2Name">Time 2</span>
+                        <span class="card-count" id="team2Count">5 cartas</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Time Selecionado -->
+            <section class="card selected-team-section" id="selectedTeamSection" style="display: none;">
+                <h2>Time Selecionado</h2>
+                <div class="selected-team-info">
+                    <h3 id="selectedTeamName">-</h3>
+                    <p>Cartas disponíveis: <strong id="selectedTeamCards">0</strong></p>
+                    <div class="cards-visual" id="cardsVisual"></div>
+                </div>
+            </section>
+
+            <!-- Ação de Revelar -->
+            <section class="card reveal-section">
+                <div class="reveal-buttons">
+                    <button onclick="prepareCard()" id="prepareBtn" class="btn-prepare" disabled>
+                        <span class="btn-text">PREPARAR CARTA</span>
+                        <span class="btn-subtitle">Mostra verso no OBS</span>
+                    </button>
+                    <button onclick="revealCard()" id="revealBtn" class="btn-reveal" disabled>
+                        <span class="btn-text">REVELAR CARTA</span>
+                        <span class="btn-subtitle">Vira a carta</span>
+                    </button>
+                </div>
+                <p class="reveal-hint" id="revealHint">Selecione um time e prepare a carta primeiro</p>
+            </section>
+
+            <!-- Última Carta Revelada -->
+            <section class="card">
+                <h2>Última Carta Revelada</h2>
+                <div id="lastRevealedCard" class="last-revealed">
+                    <p class="empty-state">Nenhuma carta revelada ainda</p>
+                </div>
+            </section>
+
+            <!-- Histórico -->
+            <section class="card">
+                <h2>Histórico de Revelações</h2>
+                <div id="historyDisplay" class="history-display">
+                    <p class="empty-state">Nenhuma carta revelada ainda</p>
+                </div>
+            </section>
+
+            <!-- Links -->
+            <section class="card">
+                <div class="links">
+                    <a href="/admin" class="btn btn-link">Painel Admin</a>
+                    <a href="/obs" target="_blank" class="btn btn-link">Página OBS</a>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script src="scripts/operator.js"></script>
+</body>
+</html>
