@@ -23,6 +23,7 @@ body {
     justify-content: center;
     perspective: 1500px;
     position: relative;
+    padding: 20px;
 }
 
 /* Wrapper da carta - controla a animação de entrada */
@@ -31,6 +32,10 @@ body {
     transform: translateY(-200px) scale(0.5);
     transition: none;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .card-wrapper.show {
@@ -104,8 +109,8 @@ body {
 
 /* Carta estilo FIFA - com flip 3D real */
 .card-fifa {
-    width: 400px;
-    height: 600px;
+    width: 350px;
+    height: 525px;
     position: relative;
     transform-style: preserve-3d;
 }
@@ -157,7 +162,7 @@ body {
 
 /* Nome do time abaixo da carta (fora da carta) */
 .team-name-bottom {
-    margin-top: 30px;
+    margin-top: 25px;
     text-align: center;
     opacity: 1;
     position: relative;
@@ -165,7 +170,7 @@ body {
 }
 
 .team-name-bottom h3 {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: 3px;
@@ -175,7 +180,7 @@ body {
         0 0 40px rgba(0, 0, 0, 0.8),
         0 2px 4px rgba(0, 0, 0, 1);
     margin: 0;
-    padding: 15px 30px;
+    padding: 12px 25px;
     background: linear-gradient(135deg, 
         rgba(0, 0, 0, 0.7) 0%, 
         rgba(0, 0, 0, 0.5) 100%);
