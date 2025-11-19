@@ -71,6 +71,10 @@ function initializeData() {
       }
     },
     maxCardsPerTeam: 3, // Limite configurável de cartas por time
+    shuffleSeeds: {
+      team1: Math.floor(Math.random() * 1000000),
+      team2: Math.floor(Math.random() * 1000000)
+    },
     currentCard: null,
     history: [],
     lastUpdate: Date.now()
@@ -200,6 +204,12 @@ app.post('/api/admin/reset', (req, res) => {
   data.currentCard = null;
   data.history = [];
   
+  // Gerar novos seeds para embaralhar cartas
+  data.shuffleSeeds = {
+    team1: Math.floor(Math.random() * 1000000),
+    team2: Math.floor(Math.random() * 1000000)
+  };
+  
   saveData(data);
   res.json({ success: true, message: 'Sistema resetado com sucesso' });
 });
@@ -211,6 +221,13 @@ app.post('/api/admin/restore-team', (req, res) => {
   
   if (team === 'team1' || team === 'team2') {
     data.teams[team].cards = createFullDeck();
+    
+    // Gerar novo seed para embaralhar cartas deste time
+    if (!data.shuffleSeeds) {
+      data.shuffleSeeds = { team1: 12345, team2: 67890 };
+    }
+    data.shuffleSeeds[team] = Math.floor(Math.random() * 1000000);
+    
     saveData(data);
     res.json({ success: true, team: data.teams[team] });
   } else {
@@ -238,9 +255,20 @@ app.get('/api/operator/team/:teamId', (req, res) => {
       canClick: !card.used || (Date.now() - card.usedAt < 30000)
     }));
     
-    // Embaralhar as cartas (Fisher-Yates shuffle)
+    // Embaralhar as cartas usando seed armazenado para este time
+    // Seed muda apenas quando resetar ou restaurar cartas
+    const shuffleSeed = data.shuffleSeeds[teamId] || Math.floor(Math.random() * 1000000);
+    
+    // Seeded random shuffle (Fisher-Yates com seed)
+    const seededRandom = (seed) => {
+      let x = Math.sin(seed++) * 10000;
+      return x - Math.floor(x);
+    };
+    
+    let currentSeed = shuffleSeed;
     for (let i = cardsWithImages.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
+      currentSeed++;
+      const j = Math.floor(seededRandom(currentSeed) * (i + 1));
       [cardsWithImages[i], cardsWithImages[j]] = [cardsWithImages[j], cardsWithImages[i]];
     }
     
