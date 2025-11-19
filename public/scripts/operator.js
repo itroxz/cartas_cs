@@ -72,7 +72,7 @@ function renderTeamCards() {
         
         return `
             <div class="${classes}" 
-                 onclick="${!card.used && !limitReached ? `revealCard(${card.number}, ${index})` : ''}"
+                 onclick="${!card.used && !limitReached ? `revealCard(${card.originalIndex})` : ''}"
                  data-card="${card.number}"
                  data-original-index="${card.originalIndex}"
                  data-index="${index}">
@@ -85,10 +85,10 @@ function renderTeamCards() {
 }
 
 // Revelar carta
-async function revealCard(cardNumber, cardIndex) {
+async function revealCard(originalIndex) {
     if (!selectedTeam || !teamData) return;
     
-    const card = teamData.cards[cardIndex];
+    const card = teamData.cards.find(c => c.originalIndex === originalIndex);
     if (!card || card.used) return;
     
     // Mostrar modal de confirmação (operador não sabe qual carta é)
@@ -107,14 +107,14 @@ async function revealCard(cardNumber, cardIndex) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 team: selectedTeam,
-                cardNumber: card.number
+                cardIndex: originalIndex
             })
         });
         
         const data = await response.json();
         
         if (data.success) {
-            showStatus(`Carta revelada: ${data.cardName || 'Carta #' + card.number}!`, 'success');
+            showStatus(`Carta revelada: ${data.cardName || 'Carta'}!`, 'success');
             // Recarregar dados do time
             await loadTeamData(selectedTeam);
         } else {

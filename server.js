@@ -256,7 +256,7 @@ app.get('/api/operator/team/:teamId', (req, res) => {
 
 // Revelar uma carta diretamente (novo sistema)
 app.post('/api/operator/reveal-card', (req, res) => {
-  const { team, cardNumber } = req.body;
+  const { team, cardIndex } = req.body;
   const data = readData();
   
   if (!data.teams[team]) {
@@ -274,14 +274,16 @@ app.post('/api/operator/reveal-card', (req, res) => {
     });
   }
   
-  // Encontrar a carta
-  const cardIndex = data.teams[team].cards.findIndex(c => c.number === cardNumber && !c.used);
-  
-  if (cardIndex === -1) {
-    return res.status(400).json({ success: false, error: 'Carta não encontrada ou já foi usada' });
+  // Usar o índice original da carta no array
+  if (cardIndex === undefined || cardIndex < 0 || cardIndex >= data.teams[team].cards.length) {
+    return res.status(400).json({ success: false, error: 'Índice de carta inválido' });
   }
   
   const card = data.teams[team].cards[cardIndex];
+  
+  if (!card) {
+    return res.status(400).json({ success: false, error: 'Carta não encontrada' });
+  }
   
   // Verificar se já foi usada (dupla verificação)
   if (card.used) {
@@ -293,14 +295,14 @@ app.post('/api/operator/reveal-card', (req, res) => {
   card.usedAt = Date.now();
   
   const teamSide = data.teams[team].side;
-  const cardImage = getCardImage(cardNumber, teamSide);
+  const cardImage = getCardImage(card.number, teamSide);
   
   // Atualizar carta atual
   data.currentCard = {
     team: team,
     teamName: data.teams[team].name,
     teamSide: teamSide,
-    cardNumber: cardNumber,
+    cardNumber: card.number,
     cardImage: cardImage,
     timestamp: Date.now()
   };
@@ -313,7 +315,7 @@ app.post('/api/operator/reveal-card', (req, res) => {
     team: team,
     teamName: data.teams[team].name,
     teamSide: teamSide,
-    cardNumber: cardNumber,
+    cardNumber: card.number,
     cardImage: cardImage,
     timestamp: Date.now()
   });
