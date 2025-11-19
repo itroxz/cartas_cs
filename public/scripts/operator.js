@@ -3,6 +3,7 @@
 let selectedTeam = null;
 let teamData = null;
 let updateInterval = null;
+let maxCardsPerTeam = 3; // Default, will be updated from server
 
 // Carregar dados de um time
 async function loadTeamData(teamId) {
@@ -13,6 +14,14 @@ async function loadTeamData(teamId) {
         console.log('Team data loaded:', data);
         
         teamData = data;
+        
+        // Obter maxCardsPerTeam do servidor
+        const statusResponse = await fetch('/api/admin/status');
+        const statusData = await statusResponse.json();
+        if (statusData.maxCardsPerTeam) {
+            maxCardsPerTeam = statusData.maxCardsPerTeam;
+        }
+        
         renderTeamCards();
         startCardTimers();
     } catch (error) {
@@ -32,19 +41,22 @@ function renderTeamCards() {
         teamName.textContent = 'Selecione um time';
         teamSide.textContent = '';
         teamSide.className = 'side-badge';
-        document.getElementById('cardCounter').textContent = '0/6';
+        document.getElementById('cardCounter').textContent = `0/${maxCardsPerTeam} usadas`;
         return;
     }
     
-    // Atualizar contador de cartas disponíveis
-    const availableCards = teamData.cards.filter(c => !c.used).length;
-    document.getElementById('cardCounter').textContent = `${availableCards}/6`;
+    // Atualizar contador de cartas usadas
+    const usedCards = teamData.cards.filter(c => c.used).length;
+    document.getElementById('cardCounter').textContent = `${usedCards}/${maxCardsPerTeam} usadas`;
     
     teamName.textContent = teamData.name;
     teamSide.textContent = teamData.side;
     teamSide.className = `side-badge ${teamData.side}`;
     
-    grid.innerHTML = teamData.cards.map(card => {
+    // Verificar se atingiu o limite
+    const limitReached = usedCards >= maxCardsPerTeam;
+    
+    grid.innerHTML = teamData.cards.map((card, index) => {
         const now = Date.now();
         const isLocked = card.used && card.usedAt && (now - card.usedAt < 30000);
         const timeRemaining = isLocked ? Math.ceil((30000 - (now - card.usedAt)) / 1000) : 0;
@@ -52,32 +64,37 @@ function renderTeamCards() {
         let classes = 'card-item';
         if (card.used) classes += ' used';
         if (isLocked) classes += ' locked';
+        // Desabilitar cartas restantes se limite foi atingido
+        if (!card.used && limitReached) classes += ' disabled';
         
-        console.log('Rendering card:', card.number, 'image:', card.image);
+        // Operador vê apenas o verso (ou a carta revelada se já foi usada)
+        const cardImage = card.image; // 'verso.png' para não usadas, carta real para usadas
         
         return `
             <div class="${classes}" 
-                 onclick="${!card.used ? `revealCard(${card.number})` : ''}"
-                 data-card="${card.number}">
-                <img src="/cartas/${card.image}" alt="Carta ${card.number}" onerror="console.error('Failed to load:', this.src)">
+                 onclick="${!card.used && !limitReached ? `revealCard(${card.number}, ${index})` : ''}"
+                 data-card="${card.number}"
+                 data-index="${index}">
+                <img src="/cartas/${cardImage}" alt="Carta ${card.used ? card.number : '?'}" onerror="console.error('Failed to load:', this.src)">
                 ${isLocked ? `<div class="time-overlay">${timeRemaining}s</div>` : ''}
+                ${!card.used && limitReached ? `<div class="disabled-overlay">Limite atingido</div>` : ''}
+                ${!card.used && !limitReached ? `<div class="card-number-badge">${index + 1}</div>` : ''}
             </div>
         `;
     }).join('');
 }
 
 // Revelar carta
-async function revealCard(cardNumber) {
+async function revealCard(cardNumber, cardIndex) {
     if (!selectedTeam || !teamData) return;
     
-    const card = teamData.cards.find(c => c.number === cardNumber);
+    const card = teamData.cards[cardIndex];
     if (!card || card.used) return;
     
-    // Mostrar modal de confirmação touch-friendly
-    const cardName = getCardName(card.image);
+    // Mostrar modal de confirmação (operador não sabe qual carta é)
     const confirmed = await showConfirmModal(
-        `Revelar a carta "${cardName}"?`,
-        'Esta ação não pode ser desfeita.'
+        `Revelar carta #${cardIndex + 1}?`,
+        'Você não sabe qual carta é até revelar. Esta ação não pode ser desfeita.'
     );
     
     if (!confirmed) return;
@@ -97,7 +114,7 @@ async function revealCard(cardNumber) {
         const data = await response.json();
         
         if (data.success) {
-            showStatus('Carta revelada!', 'success');
+            showStatus(`Carta revelada: ${data.cardName || 'Carta #' + cardNumber}!`, 'success');
             // Recarregar dados do time
             await loadTeamData(selectedTeam);
         } else {

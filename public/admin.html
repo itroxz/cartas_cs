@@ -31,6 +31,15 @@
                 
                 <hr style="margin: 25px 0; border: none; border-top: 1px solid #334155;">
                 
+                <h3 style="margin-bottom: 15px;">Limite de Cartas por Time</h3>
+                <div class="form-group">
+                    <label for="maxCardsInput">Máximo de cartas que cada time pode selecionar:</label>
+                    <input type="number" id="maxCardsInput" min="1" max="13" value="3" style="width: 100px;">
+                    <button onclick="updateMaxCards()" class="btn btn-primary" style="margin-left: 10px;">Salvar Limite</button>
+                </div>
+                
+                <hr style="margin: 25px 0; border: none; border-top: 1px solid #334155;">
+                
                 <h3 style="margin-bottom: 15px;">Lados (Counter-Strike)</h3>
                 <p style="color: #94a3b8; margin-bottom: 15px; font-size: 0.95em;">
                     Selecione o lado do Time 1. O Time 2 será automaticamente o lado oposto.
@@ -54,13 +63,13 @@
                     <div class="team">
                         <h3 id="team1NameDisplay">Time 1</h3>
                         <p><span class="side-badge" id="team1SideDisplay">CT</span></p>
-                        <p>Cartas restantes: <strong id="team1Cards">5</strong></p>
+                        <p>Cartas restantes: <strong id="team1Cards">13</strong></p>
                         <button onclick="restoreTeam('team1')" class="btn btn-secondary">Restaurar Cartas</button>
                     </div>
                     <div class="team">
                         <h3 id="team2NameDisplay">Time 2</h3>
                         <p><span class="side-badge" id="team2SideDisplay">TR</span></p>
-                        <p>Cartas restantes: <strong id="team2Cards">5</strong></p>
+                        <p>Cartas restantes: <strong id="team2Cards">13</strong></p>
                         <button onclick="restoreTeam('team2')" class="btn btn-secondary">Restaurar Cartas</button>
                     </div>
                 </div>

@@ -21,27 +21,56 @@ function initializeData() {
         name: 'Time 1',
         side: 'CT', // CT ou TR
         cards: [
-          { number: 1, used: false, usedAt: null },
-          { number: 2, used: false, usedAt: null },
-          { number: 3, used: false, usedAt: null },
-          { number: 4, used: false, usedAt: null },
-          { number: 5, used: false, usedAt: null },
-          { number: 6, used: false, usedAt: null }
+          // Carta 1 - Cortina de Fumaça (2x)
+          { number: 1, copy: 'A', used: false, usedAt: null },
+          { number: 1, copy: 'B', used: false, usedAt: null },
+          // Carta 2 - Duro Dorme (2x)
+          { number: 2, copy: 'A', used: false, usedAt: null },
+          { number: 2, copy: 'B', used: false, usedAt: null },
+          // Carta 3 - Golpe Katana (2x)
+          { number: 3, copy: 'A', used: false, usedAt: null },
+          { number: 3, copy: 'B', used: false, usedAt: null },
+          // Carta 4 - Tommy Gun (2x)
+          { number: 4, copy: 'A', used: false, usedAt: null },
+          { number: 4, copy: 'B', used: false, usedAt: null },
+          // Carta 5 - Vem Tranquilo (2x)
+          { number: 5, copy: 'A', used: false, usedAt: null },
+          { number: 5, copy: 'B', used: false, usedAt: null },
+          // Carta 6 - Jogo Bicho (2x)
+          { number: 6, copy: 'A', used: false, usedAt: null },
+          { number: 6, copy: 'B', used: false, usedAt: null },
+          // Carta 7 - Coringa (1x)
+          { number: 7, copy: null, used: false, usedAt: null }
         ]
       },
       team2: {
         name: 'Time 2',
         side: 'TR', // CT ou TR
         cards: [
-          { number: 1, used: false, usedAt: null },
-          { number: 2, used: false, usedAt: null },
-          { number: 3, used: false, usedAt: null },
-          { number: 4, used: false, usedAt: null },
-          { number: 5, used: false, usedAt: null },
-          { number: 6, used: false, usedAt: null }
+          // Carta 1 - Cortina de Fumaça (2x)
+          { number: 1, copy: 'A', used: false, usedAt: null },
+          { number: 1, copy: 'B', used: false, usedAt: null },
+          // Carta 2 - Duro Dorme (2x)
+          { number: 2, copy: 'A', used: false, usedAt: null },
+          { number: 2, copy: 'B', used: false, usedAt: null },
+          // Carta 3 - Golpe Katana (2x)
+          { number: 3, copy: 'A', used: false, usedAt: null },
+          { number: 3, copy: 'B', used: false, usedAt: null },
+          // Carta 4 - Tommy Gun (2x)
+          { number: 4, copy: 'A', used: false, usedAt: null },
+          { number: 4, copy: 'B', used: false, usedAt: null },
+          // Carta 5 - Vem Tranquilo (2x)
+          { number: 5, copy: 'A', used: false, usedAt: null },
+          { number: 5, copy: 'B', used: false, usedAt: null },
+          // Carta 6 - Jogo Bicho (2x)
+          { number: 6, copy: 'A', used: false, usedAt: null },
+          { number: 6, copy: 'B', used: false, usedAt: null },
+          // Carta 7 - Coringa (1x)
+          { number: 7, copy: null, used: false, usedAt: null }
         ]
       }
     },
+    maxCardsPerTeam: 3, // Limite configurável de cartas por time
     currentCard: null,
     history: [],
     lastUpdate: Date.now()
@@ -75,7 +104,8 @@ const cardImages = {
   3: 'golpe-katana.png',
   4: 'tommy-gun.png',
   5: 'vem-tranquilo.png',
-  6: 'jogo-bicho' // Especial - depende do lado
+  6: 'jogo-bicho', // Especial - depende do lado
+  7: 'coringa.png' // Carta coringa
 };
 
 // Obter imagem da carta baseada no número e lado do time
@@ -85,6 +115,32 @@ function getCardImage(cardNumber, side) {
     return side === 'CT' ? 'ct-jogo-bicho.png' : 'tr-jogo-bicho.png';
   }
   return card;
+}
+
+// Criar deck completo de 13 cartas
+function createFullDeck() {
+  return [
+    // Carta 1 - Cortina de Fumaça (2x)
+    { number: 1, copy: 'A', used: false, usedAt: null },
+    { number: 1, copy: 'B', used: false, usedAt: null },
+    // Carta 2 - Duro Dorme (2x)
+    { number: 2, copy: 'A', used: false, usedAt: null },
+    { number: 2, copy: 'B', used: false, usedAt: null },
+    // Carta 3 - Golpe Katana (2x)
+    { number: 3, copy: 'A', used: false, usedAt: null },
+    { number: 3, copy: 'B', used: false, usedAt: null },
+    // Carta 4 - Tommy Gun (2x)
+    { number: 4, copy: 'A', used: false, usedAt: null },
+    { number: 4, copy: 'B', used: false, usedAt: null },
+    // Carta 5 - Vem Tranquilo (2x)
+    { number: 5, copy: 'A', used: false, usedAt: null },
+    { number: 5, copy: 'B', used: false, usedAt: null },
+    // Carta 6 - Jogo Bicho (2x)
+    { number: 6, copy: 'A', used: false, usedAt: null },
+    { number: 6, copy: 'B', used: false, usedAt: null },
+    // Carta 7 - Coringa (1x)
+    { number: 7, copy: null, used: false, usedAt: null }
+  ];
 }
 
 // ========== ROTAS ADMIN ==========
@@ -107,6 +163,20 @@ app.post('/api/admin/set-team-names', (req, res) => {
   res.json({ success: true, teams: data.teams });
 });
 
+// Configurar limite máximo de cartas por time
+app.post('/api/admin/set-max-cards', (req, res) => {
+  const { maxCards } = req.body;
+  const data = readData();
+  
+  if (maxCards && maxCards > 0 && maxCards <= 13) {
+    data.maxCardsPerTeam = parseInt(maxCards);
+    saveData(data);
+    res.json({ success: true, maxCardsPerTeam: data.maxCardsPerTeam });
+  } else {
+    res.status(400).json({ success: false, error: 'Valor inválido (deve ser entre 1 e 13)' });
+  }
+});
+
 // Configurar lados CT/TR dos times
 app.post('/api/admin/set-team-sides', (req, res) => {
   const { team1Side } = req.body;
@@ -125,22 +195,8 @@ app.post('/api/admin/set-team-sides', (req, res) => {
 // Resetar sistema completo
 app.post('/api/admin/reset', (req, res) => {
   const data = readData();
-  data.teams.team1.cards = [
-    { number: 1, used: false, usedAt: null },
-    { number: 2, used: false, usedAt: null },
-    { number: 3, used: false, usedAt: null },
-    { number: 4, used: false, usedAt: null },
-    { number: 5, used: false, usedAt: null },
-    { number: 6, used: false, usedAt: null }
-  ];
-  data.teams.team2.cards = [
-    { number: 1, used: false, usedAt: null },
-    { number: 2, used: false, usedAt: null },
-    { number: 3, used: false, usedAt: null },
-    { number: 4, used: false, usedAt: null },
-    { number: 5, used: false, usedAt: null },
-    { number: 6, used: false, usedAt: null }
-  ];
+  data.teams.team1.cards = createFullDeck();
+  data.teams.team2.cards = createFullDeck();
   data.currentCard = null;
   data.history = [];
   
@@ -154,14 +210,7 @@ app.post('/api/admin/restore-team', (req, res) => {
   const data = readData();
   
   if (team === 'team1' || team === 'team2') {
-    data.teams[team].cards = [
-      { number: 1, used: false, usedAt: null },
-      { number: 2, used: false, usedAt: null },
-      { number: 3, used: false, usedAt: null },
-      { number: 4, used: false, usedAt: null },
-      { number: 5, used: false, usedAt: null },
-      { number: 6, used: false, usedAt: null }
-    ];
+    data.teams[team].cards = createFullDeck();
     saveData(data);
     res.json({ success: true, team: data.teams[team] });
   } else {
@@ -171,7 +220,7 @@ app.post('/api/admin/restore-team', (req, res) => {
 
 // ========== ROTAS OPERADOR ==========
 
-// Obter informações de um time (com cartas completas)
+// Obter informações de um time (operador vê apenas o verso das cartas)
 app.get('/api/operator/team/:teamId', (req, res) => {
   const { teamId } = req.params;
   const data = readData();
@@ -180,9 +229,11 @@ app.get('/api/operator/team/:teamId', (req, res) => {
     const teamSide = data.teams[teamId].side;
     const cardsWithImages = data.teams[teamId].cards.map(card => ({
       number: card.number,
+      copy: card.copy,
       used: card.used,
       usedAt: card.usedAt,
-      image: getCardImage(card.number, teamSide),
+      // Operador vê apenas o verso - não sabe qual carta é até clicar
+      image: card.used ? getCardImage(card.number, teamSide) : 'verso.png',
       canClick: !card.used || (Date.now() - card.usedAt < 30000)
     }));
     
@@ -205,16 +256,27 @@ app.post('/api/operator/reveal-card', (req, res) => {
     return res.status(400).json({ success: false, error: 'Time inválido' });
   }
   
+  // Verificar limite de cartas usadas
+  const usedCount = data.teams[team].cards.filter(c => c.used).length;
+  const maxCardsPerTeam = data.maxCardsPerTeam || 3;
+  
+  if (usedCount >= maxCardsPerTeam) {
+    return res.status(400).json({ 
+      success: false, 
+      error: `Limite de ${maxCardsPerTeam} cartas atingido` 
+    });
+  }
+  
   // Encontrar a carta
-  const cardIndex = data.teams[team].cards.findIndex(c => c.number === cardNumber);
+  const cardIndex = data.teams[team].cards.findIndex(c => c.number === cardNumber && !c.used);
   
   if (cardIndex === -1) {
-    return res.status(400).json({ success: false, error: 'Carta não encontrada' });
+    return res.status(400).json({ success: false, error: 'Carta não encontrada ou já foi usada' });
   }
   
   const card = data.teams[team].cards[cardIndex];
   
-  // Verificar se já foi usada
+  // Verificar se já foi usada (dupla verificação)
   if (card.used) {
     return res.status(400).json({ success: false, error: 'Carta já foi usada' });
   }
@@ -254,9 +316,25 @@ app.post('/api/operator/reveal-card', (req, res) => {
   
   saveData(data);
   
+  // Função auxiliar para obter nome da carta
+  const getCardName = (image) => {
+    const names = {
+      'cortina-fumaca.png': 'Cortina de Fumaça',
+      'duro-dorme.png': 'Duro Dorme',
+      'golpe-katana.png': 'Golpe Katana',
+      'tommy-gun.png': 'Tommy Gun',
+      'vem-tranquilo.png': 'Vem Tranquilo',
+      'ct-jogo-bicho.png': 'Jogo Bicho',
+      'tr-jogo-bicho.png': 'Jogo Bicho',
+      'coringa.png': 'Coringa'
+    };
+    return names[image] || 'Carta Desconhecida';
+  };
+  
   res.json({
     success: true,
-    card: data.currentCard
+    card: data.currentCard,
+    cardName: getCardName(cardImage)
   });
 });
 

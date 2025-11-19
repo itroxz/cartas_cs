@@ -159,14 +159,14 @@ body {
     padding: 10px;
 }
 
-/* Grid de cartas - 3x2 para tablet */
+/* Grid de cartas - 2 colunas verticais para 13 cartas */
 .cards-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 10px;
     flex: 1;
     align-content: start;
-    max-width: 1400px;
+    max-width: 900px;
     margin: 0 auto;
     width: 100%;
 }
@@ -221,6 +221,55 @@ body {
     opacity: 0.6;
     cursor: wait;
     animation: pulse 2s ease-in-out infinite;
+}
+
+/* Cartas desabilitadas quando limite é atingido */
+.card-item.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    filter: grayscale(70%);
+}
+
+.card-item.disabled:active {
+    transform: none;
+}
+
+/* Overlay de desabilitado */
+.disabled-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #e74c3c;
+    text-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+    text-align: center;
+    padding: 10px;
+}
+
+/* Badge de número da carta (canto superior direito) */
+.card-number-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(102, 126, 234, 0.95);
+    color: white;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+    z-index: 10;
 }
 
 @keyframes pulse {

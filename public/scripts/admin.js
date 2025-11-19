@@ -39,6 +39,11 @@ async function loadStatus() {
         document.getElementById('team1Cards').textContent = team1Available;
         document.getElementById('team2Cards').textContent = team2Available;
         
+        // Atualizar limite máximo de cartas
+        if (data.maxCardsPerTeam) {
+            document.getElementById('maxCardsInput').value = data.maxCardsPerTeam;
+        }
+        
         // Atualizar carta atual
         displayCurrentCard(data.currentCard);
         
@@ -76,6 +81,36 @@ async function updateTeamNames() {
     } catch (error) {
         console.error('Erro ao atualizar nomes:', error);
         showNotification('Erro ao atualizar nomes dos times', 'error');
+    }
+}
+
+// Atualizar limite máximo de cartas por time
+async function updateMaxCards() {
+    const maxCards = parseInt(document.getElementById('maxCardsInput').value);
+    
+    if (!maxCards || maxCards < 1 || maxCards > 13) {
+        showNotification('Por favor, insira um valor entre 1 e 13', 'warning');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/admin/set-max-cards', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ maxCards })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showNotification(`Limite atualizado para ${maxCards} cartas por time!`, 'success');
+            loadStatus();
+        } else {
+            showNotification(data.error || 'Erro ao atualizar limite', 'error');
+        }
+    } catch (error) {
+        console.error('Erro ao atualizar limite:', error);
+        showNotification('Erro ao atualizar limite de cartas', 'error');
     }
 }
 
