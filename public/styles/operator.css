@@ -53,13 +53,14 @@ body {
     position: relative;
     z-index: 10;
     text-align: center;
-    padding: 15px 0 5px 0;
+    padding: 12px 0;
     background: rgba(255, 255, 255, 0.03);
     border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
 }
 
 .page-title h1 {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 3px;
@@ -70,24 +71,63 @@ body {
     margin: 0;
 }
 
-.container {
+/* Seleção de Time (movida para cima) */
+.team-selector {
     display: flex;
-    flex-direction: column;
-    height: 100vh;
-    padding: 0 15px 15px 15px;
-    gap: 10px;
+    gap: 15px;
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
     position: relative;
     z-index: 10;
 }
 
-/* Área das cartas - ocupa 85% da tela */
+.btn-team {
+    flex: 1;
+    padding: 15px 20px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    min-height: 55px;
+}
+
+.btn-team:active {
+    transform: scale(0.95);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.btn-team.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #667eea;
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: relative;
+    z-index: 10;
+}
+
+/* Área das cartas - ocupa espaço restante */
 .cards-area {
     flex: 1;
     display: flex;
     flex-direction: column;
     gap: 10px;
     overflow: hidden;
-    min-height: 0;
+    padding: 10px 15px 15px 15px;
 }
 
 .team-header {
@@ -232,63 +272,6 @@ body {
 }
 
 /* Controles na parte inferior - 15% da tela */
-.controls {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 15px;
-    padding: 12px 20px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    flex-shrink: 0;
-}
-
-.control-group {
-    display: flex;
-    gap: 15px;
-}
-
-.btn-small {
-    padding: 10px 25px;
-    font-size: 0.85rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 6px;
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.btn-small:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.5);
-    transform: translateY(-2px);
-}
-
-.btn-small.active {
-    background: #3498db;
-    border-color: #3498db;
-    box-shadow: 0 5px 20px rgba(52, 152, 219, 0.5);
-}
-
-.control-info {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-#statusText {
-    font-size: 1rem;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.7);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
 /* Mensagem quando não há time selecionado */
 .no-team-message {
     text-align: center;
@@ -310,17 +293,29 @@ body {
         font-size: 1.4rem;
     }
     
-    .btn-small {
-        padding: 10px 20px;
-        font-size: 0.8rem;
+    .btn-team {
+        padding: 12px 15px;
+        font-size: 0.95rem;
+        min-height: 50px;
+    }
+    
+    .page-title h1 {
+        font-size: 1.3rem;
     }
 }
 
 /* Responsivo para tablets em paisagem */
 @media (orientation: landscape) and (max-height: 600px) {
-    .container {
-        padding: 10px;
-        gap: 10px;
+    .page-title {
+        padding: 8px 0;
+    }
+    
+    .page-title h1 {
+        font-size: 1.3rem;
+    }
+    
+    .team-selector {
+        padding: 8px 15px;
     }
     
     .cards-grid {
@@ -328,11 +323,12 @@ body {
     }
     
     .team-header {
-        padding: 10px;
+        padding: 8px;
     }
     
-    .controls {
-        padding: 10px;
+    .btn-team {
+        padding: 10px 15px;
+        min-height: 45px;
     }
 }
 
