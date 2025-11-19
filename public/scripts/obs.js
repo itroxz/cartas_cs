@@ -1,10 +1,8 @@
-// OBS Page JavaScript - Auto-updating card display with flip animation
+// OBS Page JavaScript - FIFA-style Card Animation
 
 let currentCardData = null;
-let preparedCardData = null;
 let eventSource = null;
-let isFlipping = false;
-let isPrepared = false;
+let isAnimating = false;
 
 // Conectar ao stream de eventos
 function connectToStream() {
@@ -14,34 +12,21 @@ function connectToStream() {
         try {
             const data = JSON.parse(event.data);
             
-            // Verificar se há carta preparada
-            if (data.preparedCard && data.preparedCard.prepared) {
-                // Carta preparada - mostrar verso
-                if (!preparedCardData || 
-                    data.preparedCard.cardNumber !== preparedCardData.cardNumber || 
-                    data.preparedCard.team !== preparedCardData.team) {
-                    
-                    preparedCardData = data.preparedCard;
-                    showPreparedCard(data.preparedCard);
-                }
-            } 
-            // Verificar se há carta revelada
-            else if (data.currentCard && data.currentCard.cardNumber) {
-                // Nova carta revelada - fazer flip
+            // Verificar se há carta nova
+            if (data.currentCard && data.currentCard.cardNumber) {
+                // Nova carta revelada
                 if (!currentCardData || 
                     data.currentCard.cardNumber !== currentCardData.cardNumber || 
                     data.currentCard.team !== currentCardData.team ||
                     data.currentCard.timestamp !== currentCardData.timestamp) {
                     
                     currentCardData = data.currentCard;
-                    preparedCardData = null;
-                    revealCard(data.currentCard);
+                    showCard(data.currentCard);
                 }
             } else {
                 // Nenhuma carta
-                if (currentCardData !== null || preparedCardData !== null) {
+                if (currentCardData !== null) {
                     currentCardData = null;
-                    preparedCardData = null;
                     hideCard();
                 }
             }
@@ -60,102 +45,46 @@ function connectToStream() {
     };
 }
 
-// Mostrar carta preparada (apenas verso, sem flip)
-function showPreparedCard(card) {
-    const wrapper = document.getElementById('obsWrapper');
-    const cardImage = document.getElementById('cardImage');
-    const teamNameTop = document.getElementById('teamNameTop');
-    
-    // Atualizar dados da carta (para quando fizer flip)
-    cardImage.src = `/cartas/${card.cardImage}`;
-    teamNameTop.textContent = card.teamName.toUpperCase();
-    
-    // Remover flip se estiver ativo
-    wrapper.classList.remove('flipped');
-    
-    // Mostrar verso
-    if (wrapper.classList.contains('hidden')) {
-        wrapper.classList.remove('hidden');
-    }
-    
-    isPrepared = true;
-}
-
-// Revelar carta (fazer flip do verso para a frente)
-function revealCard(card) {
-    if (isFlipping) return;
-    
-    const wrapper = document.getElementById('obsWrapper');
-    const cardImage = document.getElementById('cardImage');
-    const teamNameTop = document.getElementById('teamNameTop');
-    
-    // Atualizar conteúdo
-    cardImage.src = `/cartas/${card.cardImage}`;
-    teamNameTop.textContent = card.teamName.toUpperCase();
-    
-    // Se estava preparada, apenas fazer flip
-    if (isPrepared) {
-        flipCard();
-        isPrepared = false;
-    } 
-    // Se não estava preparada, mostrar verso primeiro
-    else {
-        wrapper.classList.remove('ct', 'tr', 'flipped');
-        
-        if (wrapper.classList.contains('hidden')) {
-            wrapper.classList.remove('hidden');
-            
-            setTimeout(() => {
-                flipCard();
-            }, 1000);
-        } else {
-            wrapper.classList.remove('flipped');
-            
-            setTimeout(() => {
-                cardImage.src = `/cartas/${card.cardImage}`;
-                teamNameTop.textContent = card.teamName.toUpperCase();
-                
-                setTimeout(() => {
-                    flipCard();
-                }, 300);
-            }, 600);
-        }
-    }
-}
-
-// Mostrar carta com animação de flip (função antiga - mantida para compatibilidade)
+// Mostrar carta com animação FIFA
 function showCard(card) {
-    revealCard(card);
-}
-
-// Executar animação de flip
-function flipCard() {
-    isFlipping = true;
-    const wrapper = document.getElementById('obsWrapper');
+    if (isAnimating) return;
     
-    // Adicionar classe de flip
-    wrapper.classList.add('flipped');
+    isAnimating = true;
+    const wrapper = document.getElementById('cardWrapper');
+    const cardImage = document.getElementById('cardImage');
+    const teamName = document.getElementById('teamName');
     
-    // Após a animação de flip, resetar flag
+    // Esconder carta anterior se houver
+    wrapper.classList.remove('show', 'hide');
+    
+    // Pequeno delay para reset
     setTimeout(() => {
-        isFlipping = false;
-    }, 1200); // Duração do flip
+        // Atualizar conteúdo
+        cardImage.src = `/cartas/${card.cardImage}`;
+        teamName.textContent = card.teamName.toUpperCase();
+        
+        // Iniciar animação
+        wrapper.classList.add('show');
+        
+        // Resetar flag após animação (2s agora)
+        setTimeout(() => {
+            isAnimating = false;
+        }, 2000);
+    }, 100);
 }
 
 // Esconder carta
 function hideCard() {
-    const wrapper = document.getElementById('obsWrapper');
+    const wrapper = document.getElementById('cardWrapper');
     
-    // Voltar ao verso
-    wrapper.classList.remove('flipped');
+    if (!wrapper.classList.contains('show')) return;
     
-    // Aguardar flip terminar, depois esconder
+    wrapper.classList.remove('show');
+    wrapper.classList.add('hide');
+    
     setTimeout(() => {
-        wrapper.classList.add('hidden');
-        wrapper.classList.remove('ct', 'tr');
-    }, 1200);
-    
-    isPrepared = false;
+        wrapper.classList.remove('hide');
+    }, 800);
 }
 
 // Inicializar

@@ -7,11 +7,13 @@ Sistema web local para gerenciamento de cartas de times de Counter-Strike, com p
 - ✅ **Painel Administrativo**: Configure nomes dos times, lados CT/TR, restaure cartas, gerencie o sistema
 - ✅ **Lados CT/TR**: Sistema inteligente que define automaticamente o lado oposto
 - ✅ **Cartas Específicas**: Carta "Jogo Bicho" adaptada por lado (CT ou TR)
-- ✅ **Painel do Operador**: Selecione times e revele cartas com interface intuitiva
-- ✅ **Página OBS**: Display com animação de flip mostrando verso e frente da carta
-- ✅ **Animação de Flip**: Verso da carta (verso.png) vira e revela a carta real
+- ✅ **Painel do Operador**: Interface visual com 6 cartas, revelação em 1 clique (otimizado para tablet)
+- ✅ **Sistema de Bloqueio**: Cartas ficam bloqueadas por 30s após revelação antes de serem permanentemente desabilitadas
+- ✅ **Página OBS**: Display com animação estilo FIFA mostrando verso e frente da carta em 3D
+- ✅ **Animação 3D**: Verso da carta (verso.png) gira em 3D e revela a carta real com efeitos visuais
 - ✅ **API REST**: Endpoint JSON com dados da carta atual
 - ✅ **Auto-atualização**: Sistema de eventos (SSE) para atualização em tempo real
+- ✅ **Contador Visual**: Indicador de cartas disponíveis (X/6) no painel operador
 - ✅ **Design Modular**: Preparado para customização futura de design e animações
 - ✅ **Servidor Local**: Funciona totalmente offline, acessível por tablets na rede local
 
@@ -70,10 +72,12 @@ O servidor será iniciado na porta 3000. Acesse:
 
 ### Painel do Operador (`/operator`)
 
-1. **Selecionar Time**: Clique no botão do time desejado
-2. **Verificar Cartas**: Veja quantas cartas restam disponíveis
-3. **Revelar Carta**: Clique no grande botão "Revelar Carta"
-4. **Confirmação**: A carta revelada aparecerá na seção "Última Carta Revelada"
+1. **Selecionar Time**: Clique no botão do time desejado (TIME 1 ou TIME 2)
+2. **Visualizar Cartas**: Veja as 6 cartas disponíveis em grade visual
+3. **Contador**: Indicador mostra cartas disponíveis (ex: 5/6)
+4. **Revelar Carta**: Clique diretamente na carta desejada
+5. **Bloqueio de 30s**: Após revelar, a carta fica bloqueada e mostra contagem regressiva
+6. **Desabilitação**: Após 30s, a carta fica permanentemente desabilitada (cinza, opacidade 30%)
 
 ### Página OBS (`/obs`)
 
@@ -81,10 +85,12 @@ O servidor será iniciado na porta 3000. Acesse:
 2. Configure a URL: `http://localhost:3000/obs`
 3. Defina as dimensões: **400x600** (ou ajuste conforme necessário)
 4. A página mostrará automaticamente:
-   - **Verso da carta** inicialmente
-   - **Animação de flip** quando uma carta for revelada
+   - **Verso da carta** (verso.png) inicialmente com rotação 3D
+   - **Animação estilo FIFA** quando uma carta for revelada (2 segundos)
    - **Frente da carta** com a imagem PNG correspondente
-   - Atualização automática em tempo real
+   - **Efeitos visuais**: brilho, saturação, partículas rotativas
+   - **Nome do time** posicionado abaixo da carta
+   - Atualização automática em tempo real via SSE
 
 ### API JSON (`/api/current-card`)
 
@@ -187,12 +193,24 @@ Ajuste os keyframes em `obs.css` ou crie novos efeitos.
 - Dados são salvos em `data/system.json`
 - A página OBS atualiza automaticamente via SSE
 
-## 🔄 Funcionalidades Futuras (Preparadas)
+## ✨ Melhorias Recentes (v2.0)
 
-- [ ] Upload de imagens personalizadas para cartas
+- ✅ **Sistema de 1 Clique**: Revelação direta sem etapa de preparação
+- ✅ **Interface Visual**: 6 cartas visíveis em grade 3x2
+- ✅ **Bloqueio Temporário**: 30 segundos com contador antes da desabilitação permanente
+- ✅ **Animação FIFA**: Efeito 3D de entrada e flip com verso/frente (2s)
+- ✅ **Contador de Cartas**: Indicador visual X/6 no painel operador
+- ✅ **Confirmação de Revelação**: Diálogo de confirmação para evitar cliques acidentais
+- ✅ **Otimização de Performance**: Eliminação de flickering com atualizações seletivas
+- ✅ **Layout Responsivo**: Otimizado para tablets com controles na parte inferior
+
+## 🔄 Funcionalidades Futuras
+
 - [ ] Efeitos sonoros ao revelar cartas
-- [ ] Histórico de cartas reveladas
-- [ ] Temas visuais alternativos
+- [ ] Histórico expandido com estatísticas
+- [ ] Atalhos de teclado (1-6 para revelar, T para trocar time)
+- [ ] Temas visuais alternativos (modo escuro/claro)
+- [ ] Upload de imagens personalizadas
 - [ ] Suporte a mais de 2 times
 - [ ] Configuração de quantidade de cartas por time
 

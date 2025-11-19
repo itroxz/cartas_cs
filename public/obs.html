@@ -3,32 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OBS - Carta Revelada</title>
+    <title>OBS - Cartas CS</title>
     <link rel="stylesheet" href="styles/obs.css">
 </head>
 <body>
-    <div id="obsWrapper" class="obs-wrapper hidden">
-        <div class="team-name-display">
-            <h1 id="teamNameTop" class="team-name-top">NOME DO TIME</h1>
-        </div>
-        
-        <div id="cardContainer" class="card-container">
-            <div class="card-display">
-                <div class="card-flipper">
-                    <!-- Verso da carta -->
-                    <div class="card-back">
-                        <img src="/cartas/verso.png" alt="Verso da carta" class="card-image">
-                    </div>
-                    
-                    <!-- Frente da carta -->
-                    <div class="card-front">
-                        <img id="cardImage" src="" alt="Carta" class="card-image">
-                    </div>
+    <div class="obs-container">
+        <div class="card-wrapper" id="cardWrapper">
+            <div class="card-fifa">
+                <div class="card-face card-back">
+                    <img src="/cartas/verso.png" alt="Verso da carta">
                 </div>
+                <div class="card-face card-front">
+                    <img id="cardImage" src="" alt="Carta">
+                </div>
+            </div>
+            <div class="team-name-bottom">
+                <h3 id="teamName"></h3>
             </div>
         </div>
     </div>
-
+    
     <script src="scripts/obs.js"></script>
 </body>
 </html>

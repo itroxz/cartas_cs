@@ -1,6 +1,8 @@
 // Admin Panel JavaScript
 
 let statusInterval;
+let isEditingTeam1 = false;
+let isEditingTeam2 = false;
 
 // Carregar status inicial
 async function loadStatus() {
@@ -8,9 +10,13 @@ async function loadStatus() {
         const response = await fetch('/api/admin/status');
         const data = await response.json();
         
-        // Atualizar nomes dos times
-        document.getElementById('team1Name').value = data.teams.team1.name;
-        document.getElementById('team2Name').value = data.teams.team2.name;
+        // Atualizar nomes dos times apenas se não estiver editando
+        if (!isEditingTeam1) {
+            document.getElementById('team1Name').value = data.teams.team1.name;
+        }
+        if (!isEditingTeam2) {
+            document.getElementById('team2Name').value = data.teams.team2.name;
+        }
         document.getElementById('team1NameDisplay').textContent = data.teams.team1.name;
         document.getElementById('team2NameDisplay').textContent = data.teams.team2.name;
         
@@ -27,9 +33,11 @@ async function loadStatus() {
             document.getElementById('btnTR').classList.add('active');
         }
         
-        // Atualizar contadores de cartas
-        document.getElementById('team1Cards').textContent = data.teams.team1.cards.length;
-        document.getElementById('team2Cards').textContent = data.teams.team2.cards.length;
+        // Atualizar contadores de cartas (cartas não usadas)
+        const team1Available = data.teams.team1.cards.filter(c => !c.used).length;
+        const team2Available = data.teams.team2.cards.filter(c => !c.used).length;
+        document.getElementById('team1Cards').textContent = team1Available;
+        document.getElementById('team2Cards').textContent = team2Available;
         
         // Atualizar carta atual
         displayCurrentCard(data.currentCard);
@@ -222,4 +230,24 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Atualizar status a cada 2 segundos
     statusInterval = setInterval(loadStatus, 2000);
+    
+    // Detectar quando usuário está editando os campos
+    const team1Input = document.getElementById('team1Name');
+    const team2Input = document.getElementById('team2Name');
+    
+    team1Input.addEventListener('focus', () => {
+        isEditingTeam1 = true;
+    });
+    
+    team1Input.addEventListener('blur', () => {
+        isEditingTeam1 = false;
+    });
+    
+    team2Input.addEventListener('focus', () => {
+        isEditingTeam2 = true;
+    });
+    
+    team2Input.addEventListener('blur', () => {
+        isEditingTeam2 = false;
+    });
 });

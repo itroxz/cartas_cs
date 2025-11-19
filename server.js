@@ -20,16 +20,29 @@ function initializeData() {
       team1: {
         name: 'Time 1',
         side: 'CT', // CT ou TR
-        cards: [1, 2, 3, 4, 5, 6]
+        cards: [
+          { number: 1, used: false, usedAt: null },
+          { number: 2, used: false, usedAt: null },
+          { number: 3, used: false, usedAt: null },
+          { number: 4, used: false, usedAt: null },
+          { number: 5, used: false, usedAt: null },
+          { number: 6, used: false, usedAt: null }
+        ]
       },
       team2: {
         name: 'Time 2',
         side: 'TR', // CT ou TR
-        cards: [1, 2, 3, 4, 5, 6]
+        cards: [
+          { number: 1, used: false, usedAt: null },
+          { number: 2, used: false, usedAt: null },
+          { number: 3, used: false, usedAt: null },
+          { number: 4, used: false, usedAt: null },
+          { number: 5, used: false, usedAt: null },
+          { number: 6, used: false, usedAt: null }
+        ]
       }
     },
     currentCard: null,
-    preparedCard: null,
     history: [],
     lastUpdate: Date.now()
   };
@@ -112,10 +125,23 @@ app.post('/api/admin/set-team-sides', (req, res) => {
 // Resetar sistema completo
 app.post('/api/admin/reset', (req, res) => {
   const data = readData();
-  data.teams.team1.cards = [1, 2, 3, 4, 5, 6];
-  data.teams.team2.cards = [1, 2, 3, 4, 5, 6];
+  data.teams.team1.cards = [
+    { number: 1, used: false, usedAt: null },
+    { number: 2, used: false, usedAt: null },
+    { number: 3, used: false, usedAt: null },
+    { number: 4, used: false, usedAt: null },
+    { number: 5, used: false, usedAt: null },
+    { number: 6, used: false, usedAt: null }
+  ];
+  data.teams.team2.cards = [
+    { number: 1, used: false, usedAt: null },
+    { number: 2, used: false, usedAt: null },
+    { number: 3, used: false, usedAt: null },
+    { number: 4, used: false, usedAt: null },
+    { number: 5, used: false, usedAt: null },
+    { number: 6, used: false, usedAt: null }
+  ];
   data.currentCard = null;
-  data.preparedCard = null;
   data.history = [];
   
   saveData(data);
@@ -128,7 +154,14 @@ app.post('/api/admin/restore-team', (req, res) => {
   const data = readData();
   
   if (team === 'team1' || team === 'team2') {
-    data.teams[team].cards = [1, 2, 3, 4, 5, 6];
+    data.teams[team].cards = [
+      { number: 1, used: false, usedAt: null },
+      { number: 2, used: false, usedAt: null },
+      { number: 3, used: false, usedAt: null },
+      { number: 4, used: false, usedAt: null },
+      { number: 5, used: false, usedAt: null },
+      { number: 6, used: false, usedAt: null }
+    ];
     saveData(data);
     res.json({ success: true, team: data.teams[team] });
   } else {
@@ -138,84 +171,72 @@ app.post('/api/admin/restore-team', (req, res) => {
 
 // ========== ROTAS OPERADOR ==========
 
-// Obter informações de um time
+// Obter informações de um time (com cartas completas)
 app.get('/api/operator/team/:teamId', (req, res) => {
   const { teamId } = req.params;
   const data = readData();
   
   if (data.teams[teamId]) {
+    const teamSide = data.teams[teamId].side;
+    const cardsWithImages = data.teams[teamId].cards.map(card => ({
+      number: card.number,
+      used: card.used,
+      usedAt: card.usedAt,
+      image: getCardImage(card.number, teamSide),
+      canClick: !card.used || (Date.now() - card.usedAt < 30000)
+    }));
+    
     res.json({
       name: data.teams[teamId].name,
-      remainingCards: data.teams[teamId].cards.length,
-      cards: data.teams[teamId].cards
+      side: teamSide,
+      cards: cardsWithImages
     });
   } else {
     res.status(404).json({ error: 'Time não encontrado' });
   }
 });
 
-// Preparar uma carta (mostrar verso no OBS)
-app.post('/api/operator/prepare', (req, res) => {
-  const { team } = req.body;
+// Revelar uma carta diretamente (novo sistema)
+app.post('/api/operator/reveal-card', (req, res) => {
+  const { team, cardNumber } = req.body;
   const data = readData();
   
   if (!data.teams[team]) {
     return res.status(400).json({ success: false, error: 'Time inválido' });
   }
   
-  if (data.teams[team].cards.length === 0) {
-    return res.status(400).json({ success: false, error: 'Não há mais cartas disponíveis' });
+  // Encontrar a carta
+  const cardIndex = data.teams[team].cards.findIndex(c => c.number === cardNumber);
+  
+  if (cardIndex === -1) {
+    return res.status(400).json({ success: false, error: 'Carta não encontrada' });
   }
   
-  const nextCard = data.teams[team].cards[0];
-  const teamSide = data.teams[team].side;
-  const cardImage = getCardImage(nextCard, teamSide);
+  const card = data.teams[team].cards[cardIndex];
   
-  data.preparedCard = {
-    team: team,
-    teamName: data.teams[team].name,
-    teamSide: teamSide,
-    cardNumber: nextCard,
-    cardImage: cardImage,
-    prepared: true
-  };
-  
-  saveData(data);
-  
-  res.json({
-    success: true,
-    preparedCard: data.preparedCard,
-    remainingCards: data.teams[team].cards.length
-  });
-});
-
-// Revelar a carta preparada
-app.post('/api/operator/reveal', (req, res) => {
-  const data = readData();
-  
-  if (!data.preparedCard) {
-    return res.status(400).json({ success: false, error: 'Nenhuma carta preparada. Prepare uma carta primeiro.' });
+  // Verificar se já foi usada
+  if (card.used) {
+    return res.status(400).json({ success: false, error: 'Carta já foi usada' });
   }
   
-  const team = data.preparedCard.team;
+  // Marcar carta como usada
+  card.used = true;
+  card.usedAt = Date.now();
   
-  // Remover a carta do pool
-  const revealedCard = data.teams[team].cards.shift();
   const teamSide = data.teams[team].side;
-  const cardImage = getCardImage(revealedCard, teamSide);
+  const cardImage = getCardImage(cardNumber, teamSide);
   
   // Atualizar carta atual
   data.currentCard = {
     team: team,
     teamName: data.teams[team].name,
     teamSide: teamSide,
-    cardNumber: revealedCard,
+    cardNumber: cardNumber,
     cardImage: cardImage,
-    revealed: true,
     timestamp: Date.now()
   };
   
-  // Adicionar ao histórico (manter últimas 20)
+  // Adicionar ao histórico
   if (!data.history) {
     data.history = [];
   }
@@ -223,7 +244,7 @@ app.post('/api/operator/reveal', (req, res) => {
     team: team,
     teamName: data.teams[team].name,
     teamSide: teamSide,
-    cardNumber: revealedCard,
+    cardNumber: cardNumber,
     cardImage: cardImage,
     timestamp: Date.now()
   });
@@ -231,15 +252,11 @@ app.post('/api/operator/reveal', (req, res) => {
     data.history = data.history.slice(0, 20);
   }
   
-  // Limpar carta preparada
-  data.preparedCard = null;
-  
   saveData(data);
   
   res.json({
     success: true,
-    card: data.currentCard,
-    remainingCards: data.teams[team].cards.length
+    card: data.currentCard
   });
 });
 
@@ -259,12 +276,16 @@ app.get('/api/stream', (req, res) => {
   
   // Enviar dados iniciais
   const data = readData();
-  res.write(`data: ${JSON.stringify(data.currentCard)}\n\n`);
+  res.write(`data: ${JSON.stringify({
+    currentCard: data.currentCard
+  })}\n\n`);
   
   // Verificar mudanças a cada 500ms
   const interval = setInterval(() => {
     const currentData = readData();
-    res.write(`data: ${JSON.stringify(currentData.currentCard)}\n\n`);
+    res.write(`data: ${JSON.stringify({
+      currentCard: currentData.currentCard
+    })}\n\n`);
   }, 500);
   
   req.on('close', () => {
