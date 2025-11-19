@@ -227,19 +227,14 @@ function startCardTimers() {
     }, 1000);
 }
 
-// Mostrar status
+// Mostrar status (removido elemento visual, apenas console)
 function showStatus(message, type = 'info') {
-    const statusText = document.getElementById('statusText');
-    statusText.textContent = message;
-    statusText.style.color = type === 'success' ? '#2ecc71' : 
-                             type === 'error' ? '#e74c3c' : 
-                             'rgba(255, 255, 255, 0.7)';
+    console.log(`[${type.toUpperCase()}] ${message}`);
     
-    if (type !== 'info') {
-        setTimeout(() => {
-            statusText.textContent = 'Pronto';
-            statusText.style.color = 'rgba(255, 255, 255, 0.7)';
-        }, 3000);
+    // Feedback visual opcional via toast (futuro)
+    if (type === 'error') {
+        // Em caso de erro, podemos mostrar no modal ou console
+        console.error(message);
     }
 }
 
