@@ -109,7 +109,7 @@ const cardImages = {
   4: 'tommy-gun.png',
   5: 'vem-tranquilo.png',
   6: 'jogo-bicho', // Especial - depende do lado
-  7: 'coringa.png' // Carta coringa
+  7: 'CARTA-CORINGA.png' // Carta coringa
 };
 
 // Obter imagem da carta baseada no número e lado do time
@@ -363,7 +363,7 @@ app.post('/api/operator/reveal-card', (req, res) => {
       'vem-tranquilo.png': 'Vem Tranquilo',
       'ct-jogo-bicho.png': 'Jogo Bicho',
       'tr-jogo-bicho.png': 'Jogo Bicho',
-      'coringa.png': 'Coringa'
+      'CARTA-CORINGA.png': 'Coringa'
     };
     return names[image] || 'Carta Desconhecida';
   };
