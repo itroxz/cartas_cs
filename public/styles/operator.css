@@ -159,16 +159,17 @@ body {
     padding: 10px;
 }
 
-/* Grid de cartas - 2 colunas verticais para 13 cartas */
+/* Grid de cartas - 3 colunas horizontais para 13 cartas */
 .cards-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
     flex: 1;
     align-content: start;
-    max-width: 900px;
+    max-width: 1200px;
     margin: 0 auto;
     width: 100%;
+    padding: 10px;
 }
 
 .card-item {

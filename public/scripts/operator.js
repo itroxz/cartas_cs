@@ -74,11 +74,11 @@ function renderTeamCards() {
             <div class="${classes}" 
                  onclick="${!card.used && !limitReached ? `revealCard(${card.number}, ${index})` : ''}"
                  data-card="${card.number}"
+                 data-original-index="${card.originalIndex}"
                  data-index="${index}">
                 <img src="/cartas/${cardImage}" alt="Carta ${card.used ? card.number : '?'}" onerror="console.error('Failed to load:', this.src)">
                 ${isLocked ? `<div class="time-overlay">${timeRemaining}s</div>` : ''}
                 ${!card.used && limitReached ? `<div class="disabled-overlay">Limite atingido</div>` : ''}
-                ${!card.used && !limitReached ? `<div class="card-number-badge">${index + 1}</div>` : ''}
             </div>
         `;
     }).join('');
@@ -93,7 +93,7 @@ async function revealCard(cardNumber, cardIndex) {
     
     // Mostrar modal de confirmação (operador não sabe qual carta é)
     const confirmed = await showConfirmModal(
-        `Revelar carta #${cardIndex + 1}?`,
+        `Revelar esta carta?`,
         'Você não sabe qual carta é até revelar. Esta ação não pode ser desfeita.'
     );
     
@@ -107,14 +107,14 @@ async function revealCard(cardNumber, cardIndex) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 team: selectedTeam,
-                cardNumber: cardNumber
+                cardNumber: card.number
             })
         });
         
         const data = await response.json();
         
         if (data.success) {
-            showStatus(`Carta revelada: ${data.cardName || 'Carta #' + cardNumber}!`, 'success');
+            showStatus(`Carta revelada: ${data.cardName || 'Carta #' + card.number}!`, 'success');
             // Recarregar dados do time
             await loadTeamData(selectedTeam);
         } else {

@@ -220,14 +220,15 @@ app.post('/api/admin/restore-team', (req, res) => {
 
 // ========== ROTAS OPERADOR ==========
 
-// Obter informações de um time (operador vê apenas o verso das cartas)
+// Obter informações de um time (operador vê apenas o verso das cartas em ordem aleatória)
 app.get('/api/operator/team/:teamId', (req, res) => {
   const { teamId } = req.params;
   const data = readData();
   
   if (data.teams[teamId]) {
     const teamSide = data.teams[teamId].side;
-    const cardsWithImages = data.teams[teamId].cards.map(card => ({
+    let cardsWithImages = data.teams[teamId].cards.map((card, index) => ({
+      originalIndex: index,
       number: card.number,
       copy: card.copy,
       used: card.used,
@@ -236,6 +237,12 @@ app.get('/api/operator/team/:teamId', (req, res) => {
       image: card.used ? getCardImage(card.number, teamSide) : 'verso.png',
       canClick: !card.used || (Date.now() - card.usedAt < 30000)
     }));
+    
+    // Embaralhar as cartas (Fisher-Yates shuffle)
+    for (let i = cardsWithImages.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [cardsWithImages[i], cardsWithImages[j]] = [cardsWithImages[j], cardsWithImages[i]];
+    }
     
     res.json({
       name: data.teams[teamId].name,
